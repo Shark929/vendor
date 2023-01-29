@@ -42,6 +42,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     size: 30,
                   ),
                   label: "Order"),
+                  BottomNavigationBarItem(
+                  icon: Icon(
+                    Icons.wallet,
+                    size: 30,
+                  ),
+                  label: "Wallet"),
               BottomNavigationBarItem(
                   icon: Icon(
                     Icons.person,

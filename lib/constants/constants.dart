@@ -8,6 +8,7 @@ import 'package:vendor/controllers/auth_controller.dart';
 import 'package:vendor/screens/home.dart';
 import 'package:vendor/screens/order_screen.dart';
 import 'package:vendor/screens/profile_screen.dart';
+import 'package:vendor/screens/wallet_screen.dart';
 
 final primaryColor = Color.fromARGB(255, 255, 168, 7);
 
@@ -23,6 +24,7 @@ var firebaseFirestore = FirebaseFirestore.instance;
 List screens = [
   Home(),
   OrderScreen(),
+  Wallet(),
   ProfileScreens(
     uid: authController.user.uid,
   ),
@@ -84,4 +86,17 @@ List orders = [
     "item_price": "23.90",
     "order_number": "998",
   }
+];
+
+List transactions = [
+  {
+    "code": "1",
+    "amount": "10.00",
+    "time": "29/01/2023 15:45",
+  },
+  {
+    "code": "0",
+    "amount": "13.00",
+    "time": "29/01/2023 15:45",
+  },
 ];
