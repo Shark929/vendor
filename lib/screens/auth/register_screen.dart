@@ -75,11 +75,12 @@ class RegisterScreen extends StatelessWidget {
               ),
               InkWell(
                 onTap: () => authController.registerVendor(
-                    shopName: shopNameController.text,
-                    phoneNum: phoneNumController.text,
-                    email: emailController.text,
-                    password: passwordController.text,
-                    image: File("")),
+                  shopName: shopNameController.text,
+                  phoneNum: phoneNumController.text,
+                  email: emailController.text,
+                  password: passwordController.text,
+                  // image: File("")
+                ),
                 child: Container(
                   width: MediaQuery.of(context).size.width,
                   height: 40,

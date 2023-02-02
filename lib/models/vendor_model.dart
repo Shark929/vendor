@@ -1,48 +1,60 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class VendorModel {
-  String shopName;
-  String phoneNum;
-  String location;
-  String mall;
-  String profilePicture;
-  String email;
-  String uid;
-  String code;
+  String? vendorId;
+  late String vendorRestaurantName;
+  late String vendorPhone;
+  late String vendorEmail;
+  late String vendorLocation;
+  late String vendorMall;
+  late String vendorImage;
+  late bool isAuthorise;
+  late bool isOpen;
+  late String openHour;
+  late String closeHour;
 
   VendorModel({
-    required this.shopName,
-    required this.phoneNum,
-    required this.location,
-    required this.mall,
-    required this.profilePicture,
-    required this.email,
-    required this.uid,
-    required this.code,
+    this.vendorId,
+    required this.vendorRestaurantName,
+    required this.vendorEmail,
+    required this.vendorPhone,
+    required this.vendorLocation,
+    required this.vendorMall,
+    required this.vendorImage,
+    required this.isAuthorise,
+    required this.isOpen,
+    required this.openHour,
+    required this.closeHour,
   });
 
   Map<String, dynamic> toJson() => {
-        "shopName": shopName,
-        "phoneNum": phoneNum,
-        "location": location,
-        "mall": mall,
-        "profilePicture": profilePicture,
-        "email": email,
-        "uid": uid,
-        "code": code,
+        "vendorRestaurantName": vendorRestaurantName,
+        "vendorPhone": vendorPhone,
+        "vendorLocation": vendorLocation,
+        "vendorMall": vendorMall,
+        "vendorImage": vendorImage,
+        "vendorEmail": vendorEmail,
+        "vendorId": vendorId,
+        "isAuthorise": isAuthorise,
+        "isOpen": isOpen,
+        "openHour": openHour,
+        "closeHour": closeHour,
       };
 
   static VendorModel fromSnap(DocumentSnapshot snap) {
     var snapshot = snap.data() as Map<String, dynamic>;
     return VendorModel(
-      shopName: snapshot['shopName'],
-      phoneNum: snapshot['phoneNum'],
-      location: snapshot['location'],
-      mall: snapshot['mall'],
-      profilePicture: snapshot['profilePicture'],
-      email: snapshot['email'],
-      uid: snapshot['uid'],
-      code: snapshot['code'],
+      vendorRestaurantName: snapshot['vendorRestaurantName'],
+      vendorPhone: snapshot['vendorPhone'],
+      vendorLocation: snapshot['vendorLocation'],
+      vendorMall: snapshot['vendorMall'],
+      vendorImage: snapshot['vendorImage'],
+      vendorEmail: snapshot['vendorEmail'],
+      vendorId: snapshot['vendorId'],
+      isAuthorise: snapshot['isAuthorise'],
+      isOpen: snapshot['isOpen'],
+      openHour: snapshot['openHour'],
+      closeHour: snapshot['closeHour'],
     );
   }
 }

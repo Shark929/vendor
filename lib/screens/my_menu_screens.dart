@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:vendor/constants/constants.dart';
+import 'package:vendor/constants/item_firestore_db.dart';
+import 'package:vendor/controllers/item_controller.dart';
 import 'package:vendor/screens/add_menu_screens.dart';
 
 class MyMenuScreens extends StatelessWidget {
@@ -19,28 +21,58 @@ class MyMenuScreens extends StatelessWidget {
             const SizedBox(
               height: 20,
             ),
-            Container(
+            SizedBox(
               height: MediaQuery.of(context).size.height - 200,
-              child: ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: menus.length,
-                  itemBuilder: (context, index) {
-                    return Container(
-                      margin: const EdgeInsets.only(bottom: 10),
-                      child: ListTile(
-                        leading: Image.network(
-                          menus[index]['item_image'],
-                        ),
-                        title: Text(menus[index]['item_name']),
-                        subtitle: Text(
-                          menus[index]['item_description'],
-                        ),
-                        trailing: Text(
-                          menus[index]['item_price'],
-                        ),
-                      ),
-                    );
-                  }),
+              child: GetX<ItemController>(
+                init: Get.put(ItemController()),
+                builder: (ItemController itemController) {
+                  return ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: itemController.items.length,
+                      itemBuilder: (context, index) {
+                        final itemModel0 = itemController.items[index];
+
+                        if (itemModel0.uid == authController.user.uid) {
+                          return ListTile(
+                            onTap: () {
+                              ItemFirestoreDb.updateMenuAvailable(
+                                  !itemModel0.availabilityCode,
+                                  itemModel0.itemId);
+                            },
+                            leading: Container(
+                              width: 100,
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  image: DecorationImage(
+                                    image: NetworkImage(itemModel0.itemPicture),
+                                    fit: BoxFit.cover,
+                                  )),
+                            ),
+                            title: Text(
+                              itemModel0.itemName,
+                            ),
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(itemModel0.itemDescription),
+                                Text(itemModel0.availabilityCode == true
+                                    ? "Available"
+                                    : "Not available"),
+                              ],
+                            ),
+                            trailing: Text(
+                              "RM ${double.parse(itemModel0.itemPrice).toStringAsFixed(2)}",
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          );
+                        }
+                        return const SizedBox();
+                      });
+                },
+              ),
             ),
             Positioned(
               bottom: 0,

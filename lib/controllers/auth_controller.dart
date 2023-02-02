@@ -62,12 +62,12 @@ class AuthController extends GetxController {
   }
 
   //register user
-  void registerVendor(
-      {required String shopName,
-      required String phoneNum,
-      required String email,
-      required String password,
-      required File? image}) async {
+  void registerVendor({
+    required String shopName,
+    required String phoneNum,
+    required String email,
+    required String password,
+  }) async {
     try {
       if (shopName.isNotEmpty && email.isNotEmpty && password.isNotEmpty) {
         //save our user data into AUTH & firebase firestore
@@ -76,15 +76,17 @@ class AuthController extends GetxController {
         // String downloadUrl = await uploadToStorage(image);
 
         VendorModel user = VendorModel(
-          profilePicture: '',
-          email: email,
-          uid: userCredential.user!.uid,
-          code: "0",
-          location: '',
-          mall: '',
-          phoneNum: phoneNum,
-          shopName: shopName,
-        );
+            vendorId: authController.user.uid,
+            vendorRestaurantName: shopName,
+            vendorEmail: email,
+            vendorPhone: phoneNum,
+            vendorLocation: '',
+            vendorMall: '',
+            vendorImage: '',
+            isAuthorise: false,
+            isOpen: false,
+            openHour: '10:00',
+            closeHour: '10:00');
         await firebaseFirestore
             .collection('vendors')
             .doc(userCredential.user!.uid)

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:vendor/constants/constants.dart';
+import 'package:vendor/controllers/wallet_controller.dart';
 import 'package:vendor/screens/withdraw_screen.dart';
+import 'package:timeago/timeago.dart' as tago;
 
 class Wallet extends StatelessWidget {
   const Wallet({super.key});
@@ -86,26 +88,37 @@ class Wallet extends StatelessWidget {
                 const SizedBox(
                   height: 20,
                 ),
-                ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: transactions.length,
-                    itemBuilder: (context, index) {
-                      return ListTile(
-                        title: Text(
-                          transactions[index]['code'] == "0"
-                              ? "Pending"
-                              : "Successfully withdrew",
-                        ),
-                        subtitle: Text(transactions[index]['time']),
-                        trailing: Text(
-                          "RM ${transactions[index]['amount']}",
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      );
-                    })
+                GetX<WalletController>(
+                  init: Get.put(WalletController()),
+                  builder: (WalletController walletController) {
+                    return ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: walletController.wallet.length,
+                        itemBuilder: (context, index) {
+                          final walletModel0 = walletController.wallet[index];
+
+                          if (walletModel0.uid == authController.user.uid) {
+                            return ListTile(
+                              title: Text(
+                                walletModel0.code == 0
+                                    ? "Pending"
+                                    : "Successfully withdrew",
+                              ),
+                              subtitle: Text(tago.format(DateTime.parse(
+                                  walletModel0.date.toDate().toString()))),
+                              trailing: Text(
+                                "RM ${walletModel0.amount}",
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            );
+                          }
+                          return const SizedBox();
+                        });
+                  },
+                ),
               ],
             ),
           ),

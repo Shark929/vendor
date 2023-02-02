@@ -1,9 +1,12 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:vendor/constants/constants.dart';
+import 'package:vendor/constants/wallet_firestore_db.dart';
+import 'package:vendor/models/wallet_model.dart';
 
 class WithdrawScreen extends StatelessWidget {
-  const WithdrawScreen({super.key});
-
+  WithdrawScreen({super.key});
+  TextEditingController amountController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -34,14 +37,25 @@ class WithdrawScreen extends StatelessWidget {
                 height: 20,
               ),
               TextField(
+                controller: amountController,
                 keyboardType: TextInputType.number,
-                decoration: InputDecoration(hintText: "RM 10.00"),
+                decoration: const InputDecoration(hintText: "RM 10.00"),
               ),
               const SizedBox(
                 height: 20,
               ),
               InkWell(
-                onTap: () {},
+                onTap: () async {
+                  final walletModel = WalletModel(
+                    date: Timestamp.fromDate(DateTime.now()),
+                    amount:
+                        double.parse(amountController.text).toStringAsFixed(2),
+                    code: 0,
+                    uid: authController.user.uid,
+                  );
+                  await WalletFirestoreDb.addWallet(walletModel);
+                  amountController.clear();
+                },
                 child: Container(
                   width: MediaQuery.of(context).size.width,
                   height: 40,

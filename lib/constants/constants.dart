@@ -1,5 +1,4 @@
 import 'dart:ui';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -88,15 +87,14 @@ List orders = [
   }
 ];
 
-List transactions = [
-  {
-    "code": "1",
-    "amount": "10.00",
-    "time": "29/01/2023 15:45",
-  },
-  {
-    "code": "0",
-    "amount": "13.00",
-    "time": "29/01/2023 15:45",
-  },
+const location = [
+  "Bukit Bintang",
+  "Petaling Jaya",
+  "KLCC",
+];
+
+const mall = [
+  "Pavilion",
+  "Petaling Jaya Mall",
+  "Suria KLCC",
 ];
