@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:vendor/constants/constants.dart';
+import 'package:vendor/controllers/wallet_balance_controller.dart';
 import 'package:vendor/controllers/wallet_controller.dart';
 import 'package:vendor/screens/withdraw_screen.dart';
 import 'package:timeago/timeago.dart' as tago;
@@ -56,15 +57,33 @@ class Wallet extends StatelessWidget {
                             fontWeight: FontWeight.w600,
                           ),
                         ),
-                        Text(
-                          "RM 0.00",
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white,
-                          ),
-                        ),
-                        Align(
+                        GetX<WalletBalanceController>(
+                            init: Get.put(WalletBalanceController()),
+                            builder: (WalletBalanceController
+                                walletBalanceController) {
+                              return ListView.builder(
+                                  shrinkWrap: true,
+                                  itemCount: walletBalanceController
+                                      .walletBalance.length,
+                                  itemBuilder: (context, index) {
+                                    final walletBalanceModel0 =
+                                        walletBalanceController
+                                            .walletBalance[index];
+
+                                    if (walletBalanceModel0.vendorId ==
+                                        authController.user.uid) {
+                                      return Text(
+                                        "RM ${double.parse(walletBalanceModel0.balance).toStringAsFixed(2)}",
+                                        style: const TextStyle(
+                                          fontSize: 24,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.white,
+                                        ),
+                                      );
+                                    }
+                                  });
+                            }),
+                        const Align(
                           alignment: Alignment.centerRight,
                           child: Text("Press the card to withdraw"),
                         )

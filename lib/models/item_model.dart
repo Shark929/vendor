@@ -10,17 +10,20 @@ class ItemModel {
   late String itemCuisineType;
   late String uid;
   late bool availabilityCode;
+  late String vendorId;
 
-  ItemModel(
-      {this.itemId,
-      required this.itemName,
-      required this.itemPrice,
-      required this.itemDescription,
-      required this.itemCategory,
-      required this.itemPicture,
-      required this.itemCuisineType,
-      required this.uid,
-      required this.availabilityCode});
+  ItemModel({
+    this.itemId,
+    required this.itemName,
+    required this.itemPrice,
+    required this.itemDescription,
+    required this.itemCategory,
+    required this.itemPicture,
+    required this.itemCuisineType,
+    required this.uid,
+    required this.availabilityCode,
+    required this.vendorId,
+  });
 
   ItemModel.fromDocumentSnapshot({required DocumentSnapshot documentSnapshot}) {
     itemId = documentSnapshot.id;
@@ -32,5 +35,6 @@ class ItemModel {
     itemCuisineType = documentSnapshot['itemCuisineType'];
     uid = documentSnapshot['uid'];
     availabilityCode = documentSnapshot['availabilityCode'];
+    vendorId = documentSnapshot['vendorId'];
   }
 }

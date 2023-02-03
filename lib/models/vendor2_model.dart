@@ -12,6 +12,7 @@ class Vendor2Model {
   late bool isOpen;
   late String openHour;
   late String closeHour;
+  
 
   Vendor2Model({
     this.vendorId,

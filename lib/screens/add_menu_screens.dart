@@ -158,6 +158,7 @@ class _AddMenuScreenState extends State<AddMenuScreen> {
                     itemCuisineType: dropdowncuisine,
                     uid: authController.user.uid,
                     availabilityCode: true,
+                    vendorId: authController.user.uid,
                   );
                   await ItemFirestoreDb.addItem(itemModel);
                   // amountController.clear();
