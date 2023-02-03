@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:vendor/constants/constants.dart';
 import 'package:vendor/constants/order_firestore_db.dart';
+import 'package:vendor/constants/revenue_firestore_db.dart';
 import 'package:vendor/constants/wallet_balance_firestore_db.dart';
 import 'package:vendor/controllers/my_order_controller.dart';
+import 'package:vendor/controllers/revenue_controller.dart';
 import 'package:vendor/controllers/wallet_balance_controller.dart';
-import 'package:vendor/screens/wallet_screen.dart';
 
 class OrderScreen extends StatefulWidget {
   const OrderScreen({super.key});
@@ -17,6 +18,7 @@ class OrderScreen extends StatefulWidget {
 class _OrderScreenState extends State<OrderScreen> {
   var acceptList = [];
   String balance = "";
+  String revenue = "";
 
   @override
   Widget build(BuildContext context) {
@@ -39,6 +41,18 @@ class _OrderScreenState extends State<OrderScreen> {
                     if (wbController.walletBalance[i].vendorId ==
                         authController.user.uid) {
                       balance = wbController.walletBalance[i].balance;
+                    }
+                  }
+                  return const SizedBox();
+                },
+              ),
+              GetX<RevenueController>(
+                init: Get.put(RevenueController()),
+                builder: (RevenueController rController) {
+                  for (int i = 0; i < rController.revenueList.length; i++) {
+                    if (rController.revenueList[i].vendorId ==
+                        authController.user.uid) {
+                      revenue = rController.revenueList[i].balance;
                     }
                   }
                   return const SizedBox();
@@ -144,6 +158,21 @@ class _OrderScreenState extends State<OrderScreen> {
                                                             WalletBalanceFirestoreDb
                                                                 .updateAmount(
                                                                     newBalance
+                                                                        .toStringAsFixed(
+                                                                            2),
+                                                                    authController
+                                                                        .user
+                                                                        .uid);
+                                                            double newRevenue = double
+                                                                    .parse(
+                                                                        revenue) +
+                                                                (orderModel0
+                                                                        .foodPrice *
+                                                                    orderModel0
+                                                                        .quantity);
+                                                            RevenueFirestoreDb
+                                                                .updateRevenueAmount(
+                                                                    newRevenue
                                                                         .toStringAsFixed(
                                                                             2),
                                                                     authController

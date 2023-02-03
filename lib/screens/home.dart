@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:vendor/constants/constants.dart';
+import 'package:vendor/controllers/revenue_controller.dart';
 import 'package:vendor/screens/my_menu_screens.dart';
 import 'package:vendor/widgets/dashboard_component2.dart';
 import 'package:vendor/widgets/dashboard_container1.dart';
@@ -43,7 +44,23 @@ class Home extends StatelessWidget {
             const SizedBox(
               height: 10,
             ),
-            DashboardContainer2(label: "Revenue", data: "0"),
+            GetX<RevenueController>(
+              init: Get.put(RevenueController()),
+              builder: (RevenueController wbController) {
+                return ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: wbController.revenueList.length,
+                    itemBuilder: (context, index) {
+                      final revenue0 = wbController.revenueList[index];
+                      if (revenue0.vendorId == authController.user.uid) {
+                        return DashboardContainer2(
+                            label: "Revenue", data: "RM ${revenue0.balance}");
+                      } else {
+                        return const SizedBox();
+                      }
+                    });
+              },
+            ),
             const SizedBox(
               height: 10,
             ),

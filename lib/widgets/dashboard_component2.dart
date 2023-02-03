@@ -20,15 +20,15 @@ class DashboardContainer2 extends StatelessWidget {
         children: [
           Text(
             label,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w600,
             ),
           ),
           Text(
             data,
-            style: TextStyle(
-              fontSize: 16,
+            style: const TextStyle(
+              fontSize: 24,
               fontWeight: FontWeight.w600,
             ),
           ),

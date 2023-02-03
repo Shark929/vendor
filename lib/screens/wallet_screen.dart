@@ -43,14 +43,14 @@ class Wallet extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        Text(
+                        const Text(
                           "Foodie Wallet",
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
-                        Text(
+                        const Text(
                           "Balance",
                           style: TextStyle(
                             fontSize: 16,
@@ -80,6 +80,8 @@ class Wallet extends StatelessWidget {
                                           color: Colors.white,
                                         ),
                                       );
+                                    } else {
+                                      return const SizedBox();
                                     }
                                   });
                             }),
