@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:vendor/constants/constants.dart';
+import 'package:vendor/constants/dashboard_firestore_db.dart';
 import 'package:vendor/constants/order_firestore_db.dart';
 import 'package:vendor/constants/revenue_firestore_db.dart';
 import 'package:vendor/constants/wallet_balance_firestore_db.dart';
+import 'package:vendor/controllers/dashboard_controller.dart';
 import 'package:vendor/controllers/my_order_controller.dart';
 import 'package:vendor/controllers/revenue_controller.dart';
 import 'package:vendor/controllers/wallet_balance_controller.dart';
@@ -19,7 +21,10 @@ class _OrderScreenState extends State<OrderScreen> {
   var acceptList = [];
   String balance = "";
   String revenue = "";
-
+  String totalOrder = "";
+  String totalCustomer = "";
+  String totalDineIn = "";
+  String totalTakeAway = "";
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -53,6 +58,22 @@ class _OrderScreenState extends State<OrderScreen> {
                     if (rController.revenueList[i].vendorId ==
                         authController.user.uid) {
                       revenue = rController.revenueList[i].balance;
+                    }
+                  }
+                  return const SizedBox();
+                },
+              ),
+              GetX<DashboardController>(
+                init: Get.put(DashboardController()),
+                builder: (DashboardController dController) {
+                  for (int i = 0; i < dController.dashboardList.length; i++) {
+                    if (dController.dashboardList[i].vendorId ==
+                        authController.user.uid) {
+                      totalOrder = dController.dashboardList[i].totalOrders;
+                      totalCustomer =
+                          dController.dashboardList[i].totalCustomers;
+                      totalDineIn = dController.dashboardList[i].dineIn;
+                      totalTakeAway = dController.dashboardList[i].takeAway;
                     }
                   }
                   return const SizedBox();
@@ -178,6 +199,89 @@ class _OrderScreenState extends State<OrderScreen> {
                                                                     authController
                                                                         .user
                                                                         .uid);
+
+                                                            //calculate total orders
+                                                            int orderTotal = int
+                                                                    .parse(
+                                                                        totalOrder) +
+                                                                orderModel0
+                                                                    .quantity;
+
+                                                            DashboardFirestoreDb
+                                                                .updateTotalOrders(
+                                                                    orderTotal
+                                                                        .toString(),
+                                                                    authController
+                                                                        .user
+                                                                        .uid);
+
+                                                            // calculate total customers
+                                                            List customers = [];
+                                                            if (customers
+                                                                    .isEmpty ||
+                                                                !customers.contains(
+                                                                    orderModel0
+                                                                        .uid)) {
+                                                              customers.add(
+                                                                  orderModel0
+                                                                      .uid);
+                                                            }
+                                                            int customerTotal =
+                                                                int.parse(
+                                                                        totalCustomer) +
+                                                                    customers
+                                                                        .length;
+                                                            DashboardFirestoreDb
+                                                                .updateTotalCustomers(
+                                                                    customerTotal
+                                                                        .toString(),
+                                                                    authController
+                                                                        .user
+                                                                        .uid);
+
+                                                            //calculate dine in
+
+                                                            List dines = [];
+                                                            if (orderModel0
+                                                                    .isDineIn ==
+                                                                true) {
+                                                              dines.add(
+                                                                  orderModel0
+                                                                      .isDineIn);
+                                                            }
+
+                                                            int newDine = int.parse(
+                                                                    totalDineIn) +
+                                                                dines.length;
+                                                            DashboardFirestoreDb
+                                                                .updateDineIn(
+                                                                    newDine
+                                                                        .toString(),
+                                                                    authController
+                                                                        .user
+                                                                        .uid);
+
+                                                            //calculate takes away
+
+                                                            List takes = [];
+                                                            if (orderModel0
+                                                                    .isDineIn ==
+                                                                false) {
+                                                              takes.add(
+                                                                  orderModel0
+                                                                      .isDineIn);
+                                                            }
+                                                            int newTake = int.parse(
+                                                                    totalTakeAway) +
+                                                                takes.length;
+                                                            DashboardFirestoreDb
+                                                                .updatetakeAway(
+                                                                    newTake
+                                                                        .toString(),
+                                                                    authController
+                                                                        .user
+                                                                        .uid);
+
                                                             Navigator.pop(
                                                                 context);
                                                           },
