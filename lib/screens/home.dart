@@ -25,23 +25,37 @@ class Home extends StatelessWidget {
             const SizedBox(
               height: 20,
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                DashboardContainer1(
-                  data: '1',
-                  label: 'Day',
-                ),
-                DashboardContainer1(
-                  data: '1',
-                  label: 'Month',
-                ),
-                DashboardContainer1(
-                  data: '1',
-                  label: 'Year',
-                ),
-              ],
-            ),
+            GetX<DashboardController>(
+                init: Get.put(DashboardController()),
+                builder: (DashboardController dashController) {
+                  return ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: dashController.dashboardList.length,
+                    itemBuilder: (context, index) {
+                      final dastModel0 = dashController.dashboardList[index];
+                      if (dastModel0.vendorId == authController.user.uid) {
+                        return Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            DashboardContainer1(
+                              data: dastModel0.totalOrders,
+                              label: 'Day',
+                            ),
+                            const DashboardContainer1(
+                              data: '0',
+                              label: 'Month',
+                            ),
+                            const DashboardContainer1(
+                              data: '0',
+                              label: 'Year',
+                            ),
+                          ],
+                        );
+                      }
+                      return const SizedBox();
+                    },
+                  );
+                }),
             const SizedBox(
               height: 10,
             ),
