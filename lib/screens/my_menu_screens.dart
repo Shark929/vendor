@@ -27,13 +27,15 @@ class MyMenuScreens extends StatelessWidget {
                 init: Get.put(ItemController()),
                 builder: (ItemController itemController) {
                   return ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: itemController.items.length,
-                      itemBuilder: (context, index) {
-                        final itemModel0 = itemController.items[index];
+                    shrinkWrap: true,
+                    itemCount: itemController.items.length,
+                    itemBuilder: (context, index) {
+                      final itemModel0 = itemController.items[index];
 
-                        if (itemModel0.uid == authController.user.uid) {
-                          return ListTile(
+                      if (itemModel0.vendorId == authController.user.uid) {
+                        return Padding(
+                          padding: const EdgeInsets.only(top: 16.0),
+                          child: ListTile(
                             onTap: () {
                               ItemFirestoreDb.updateMenuAvailable(
                                   !itemModel0.availabilityCode,
@@ -67,10 +69,12 @@ class MyMenuScreens extends StatelessWidget {
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
-                          );
-                        }
-                        return const SizedBox();
-                      });
+                          ),
+                        );
+                      }
+                      return const SizedBox();
+                    },
+                  );
                 },
               ),
             ),

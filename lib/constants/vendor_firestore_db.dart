@@ -60,5 +60,14 @@ class Vendor2FirestoreDb {
       },
     );
   }
+
+  //update image
+  static updateImage(String downloadUrl, documentId) {
+    firebaseFirestore.collection('vendors').doc(documentId).update(
+      {
+        'vendorImage': downloadUrl,
+      },
+    );
+  }
   //delete
 }

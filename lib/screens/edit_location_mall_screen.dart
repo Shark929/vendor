@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:vendor/constants/constants.dart';
 import 'package:vendor/constants/vendor_firestore_db.dart';
-import 'package:vendor/controllers/auth_controller.dart';
+import 'package:vendor/controllers/location_controller.dart';
 
 class EditLocationMallScreen extends StatefulWidget {
   const EditLocationMallScreen({super.key});
@@ -11,9 +12,9 @@ class EditLocationMallScreen extends StatefulWidget {
 }
 
 class _EditLocationMallScreenState extends State<EditLocationMallScreen> {
-  String dropdownLocation = location[0];
+  String dropdownLocation = "";
 
-  String dropdownMall = mall[0];
+  String dropdownMall = "";
 
   @override
   Widget build(BuildContext context) {
@@ -30,41 +31,57 @@ class _EditLocationMallScreenState extends State<EditLocationMallScreen> {
               const SizedBox(
                 height: 20,
               ),
-              Row(
-                children: [
-                  const Text(
-                    "Location: ",
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
+              SizedBox(
+                width: MediaQuery.of(context).size.width,
+                child: Row(
+                  children: [
+                    const Text(
+                      "Location: ",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
-                  ),
-                  const SizedBox(
-                    width: 20,
-                  ),
-                  DropdownButton(
-                    // Initial Value
-                    value: dropdownLocation,
+                    const SizedBox(
+                      width: 20,
+                    ),
+                    GetX<LocationController>(
+                      init: Get.put(LocationController()),
+                      builder: (LocationController lcController) {
+                        List<String> mylist = [];
+                        for (int i = 0; i < lcController.location.length; i++) {
+                          if (mylist.length < lcController.location.length ||
+                              mylist.isEmpty) {
+                            mylist.add(lcController.location[i].locationName);
+                          }
+                        }
+                        dropdownLocation = mylist[0];
+                        return DropdownButton(
+                          // Initial Value
+                          value: dropdownLocation,
 
-                    // Down Arrow Icon
-                    icon: const Icon(Icons.keyboard_arrow_down),
+                          // Down Arrow Icon
+                          icon: const Icon(Icons.keyboard_arrow_down),
 
-                    // Array list of items
-                    items: location.map((String items) {
-                      return DropdownMenuItem(
-                        value: items,
-                        child: Text(items),
-                      );
-                    }).toList(),
-                    // After selecting the desired option,it will
-                    // change button value to selected value
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        dropdownLocation = newValue!;
-                      });
-                    },
-                  ),
-                ],
+                          // Array list of items
+                          items: mylist.map((String items) {
+                            return DropdownMenuItem(
+                              value: items,
+                              child: Text(items),
+                            );
+                          }).toList(),
+                          // After selecting the desired option,it will
+                          // change button value to selected value
+                          onChanged: (String? newValue) {
+                            setState(() {
+                              dropdownLocation = newValue!;
+                            });
+                          },
+                        );
+                      },
+                    ),
+                  ],
+                ),
               ),
               const SizedBox(
                 height: 20,

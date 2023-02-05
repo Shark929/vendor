@@ -15,6 +15,7 @@ class ItemFirestoreDb {
       'itemPrice': itemModel.itemPrice,
       'uid': itemModel.uid,
       'availabilityCode': itemModel.availabilityCode,
+      'vendorId': itemModel.vendorId,
     });
   }
 

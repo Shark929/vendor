@@ -1,4 +1,8 @@
+import 'dart:io';
+import 'package:path/path.dart' as Path;
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:vendor/constants/constants.dart';
 import 'package:vendor/constants/item_firestore_db.dart';
 import 'package:vendor/models/item_model.dart';
@@ -21,6 +25,44 @@ class _AddMenuScreenState extends State<AddMenuScreen> {
   String dropdowncategory = category[0];
   String dropdowncuisine = cuisines[0];
 
+  //upload image
+  FirebaseStorage storage = FirebaseStorage.instance;
+
+  File? _photo;
+  final ImagePicker _picker = ImagePicker();
+  String dURL = "";
+  Future imgFromGallery() async {
+    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+
+    setState(() {
+      if (pickedFile != null) {
+        _photo = File(pickedFile.path);
+        uploadFile();
+      } else {
+        print('No image selected.');
+      }
+    });
+  }
+
+  Future uploadFile() async {
+    if (_photo == null) return;
+    final fileName = Path.basename(_photo!.path);
+    final destination = 'menus/$fileName';
+
+    try {
+      final ref = FirebaseStorage.instance.ref(destination).child('menu/');
+      await ref.putFile(_photo!);
+      UploadTask uploadTask = ref.putFile(_photo!);
+      TaskSnapshot taskSnapshot = await uploadTask;
+      String downloadUrl = await taskSnapshot.ref.getDownloadURL();
+      setState(() {
+        dURL = downloadUrl;
+      });
+    } catch (e) {
+      print('error occured');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -38,24 +80,42 @@ class _AddMenuScreenState extends State<AddMenuScreen> {
                 height: 20,
               ),
               InkWell(
-                onTap: () => authController.pickImage(),
-                child: Container(
-                  width: MediaQuery.of(context).size.width,
-                  height: 150,
-                  decoration: BoxDecoration(
-                    color: Colors.amber,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.add,
+                onTap: () {
+                  imgFromGallery();
+                },
+                child: dURL == ""
+                    ? Container(
+                        width: MediaQuery.of(context).size.width,
+                        height: 150,
+                        decoration: BoxDecoration(
+                          color: Colors.amber,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: const [
+                            Icon(
+                              Icons.add,
+                            ),
+                            Text("Add image"),
+                          ],
+                        ),
+                      )
+                    : InkWell(
+                        onTap: () {
+                          imgFromGallery();
+                        },
+                        child: Container(
+                          width: MediaQuery.of(context).size.width,
+                          height: 150,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              image: DecorationImage(
+                                image: NetworkImage(dURL),
+                                fit: BoxFit.cover,
+                              )),
+                        ),
                       ),
-                      Text("Add image"),
-                    ],
-                  ),
-                ),
               ),
               const SizedBox(
                 height: 20,
@@ -154,14 +214,14 @@ class _AddMenuScreenState extends State<AddMenuScreen> {
                     itemPrice: priceController.text,
                     itemDescription: itemDescriptionController.text,
                     itemCategory: dropdowncategory,
-                    itemPicture: '',
+                    itemPicture: dURL,
                     itemCuisineType: dropdowncuisine,
                     uid: authController.user.uid,
                     availabilityCode: true,
                     vendorId: authController.user.uid,
                   );
                   await ItemFirestoreDb.addItem(itemModel);
-                  // amountController.clear();
+                  Navigator.pop(context);
                 },
                 child: Container(
                   width: MediaQuery.of(context).size.width,

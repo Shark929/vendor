@@ -4,7 +4,6 @@ import 'package:vendor/constants/constants.dart';
 import 'package:vendor/constants/vendor_firestore_db.dart';
 import 'package:vendor/controllers/vendor_controller.dart';
 import 'package:vendor/screens/edit_profile_screen.dart';
-
 import '../controllers/profile_controller.dart';
 
 class ProfileScreens extends StatefulWidget {
@@ -17,6 +16,8 @@ class ProfileScreens extends StatefulWidget {
 
 class _ProfileScreensState extends State<ProfileScreens> {
   final ProfileController profileController = Get.put(ProfileController());
+
+  //Upload image functions
 
   @override
   void initState() {
@@ -52,13 +53,21 @@ class _ProfileScreensState extends State<ProfileScreens> {
                               ),
                               Align(
                                 alignment: Alignment.center,
-                                child: Container(
-                                  width: 100,
-                                  height: 100,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: Colors.amber,
-                                  ),
+                                child: Stack(
+                                  children: [
+                                    Container(
+                                      width: 100,
+                                      height: 100,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        image: DecorationImage(
+                                          image: NetworkImage(
+                                              vendorModel0.vendorImage),
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                               const SizedBox(
