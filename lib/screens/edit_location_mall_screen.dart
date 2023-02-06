@@ -3,6 +3,8 @@ import 'package:get/get.dart';
 import 'package:vendor/constants/constants.dart';
 import 'package:vendor/constants/vendor_firestore_db.dart';
 import 'package:vendor/controllers/location_controller.dart';
+import 'package:vendor/controllers/mall_controller.dart';
+import 'package:vendor/models/mall_model.dart';
 
 class EditLocationMallScreen extends StatefulWidget {
   const EditLocationMallScreen({super.key});
@@ -12,12 +14,16 @@ class EditLocationMallScreen extends StatefulWidget {
 }
 
 class _EditLocationMallScreenState extends State<EditLocationMallScreen> {
-  String dropdownLocation = "";
-
-  String dropdownMall = "";
-
   @override
   Widget build(BuildContext context) {
+    String dropdownLocation = "";
+    String dropdownMall = "";
+    List<String> mylocationList = [];
+    List<String> myMallList = [];
+    List<MallModel> mylist = [];
+
+    List<String> filterMall = [];
+
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
@@ -48,14 +54,15 @@ class _EditLocationMallScreenState extends State<EditLocationMallScreen> {
                     GetX<LocationController>(
                       init: Get.put(LocationController()),
                       builder: (LocationController lcController) {
-                        List<String> mylist = [];
                         for (int i = 0; i < lcController.location.length; i++) {
-                          if (mylist.length < lcController.location.length ||
-                              mylist.isEmpty) {
-                            mylist.add(lcController.location[i].locationName);
+                          if (mylocationList.length <
+                                  lcController.location.length ||
+                              mylocationList.isEmpty) {
+                            mylocationList
+                                .add(lcController.location[i].locationName);
                           }
                         }
-                        dropdownLocation = mylist[0];
+                        dropdownLocation = mylocationList[0];
                         return DropdownButton(
                           // Initial Value
                           value: dropdownLocation,
@@ -64,7 +71,7 @@ class _EditLocationMallScreenState extends State<EditLocationMallScreen> {
                           icon: const Icon(Icons.keyboard_arrow_down),
 
                           // Array list of items
-                          items: mylist.map((String items) {
+                          items: mylocationList.map((String items) {
                             return DropdownMenuItem(
                               value: items,
                               child: Text(items),
@@ -72,10 +79,11 @@ class _EditLocationMallScreenState extends State<EditLocationMallScreen> {
                           }).toList(),
                           // After selecting the desired option,it will
                           // change button value to selected value
-                          onChanged: (String? newValue) {
+                          onChanged: (newValue) {
                             setState(() {
                               dropdownLocation = newValue!;
                             });
+                            print(dropdownLocation);
                           },
                         );
                       },
@@ -95,29 +103,42 @@ class _EditLocationMallScreenState extends State<EditLocationMallScreen> {
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                  const SizedBox(
-                    width: 20,
-                  ),
-                  DropdownButton(
-                    // Initial Value
-                    value: dropdownMall,
+                  // const SizedBox(
+                  //   width: 20,
+                  // ),
+                  GetX<MallController>(
+                    init: Get.put(MallController()),
+                    builder: (MallController mcController) {
+                      for (int i = 0; i < mcController.mall.length; i++) {
+                        if (myMallList.length < mcController.mall.length ||
+                            myMallList.isEmpty) {
+                          myMallList.add(mcController.mall[i].mall);
+                        }
+                      }
+                      dropdownMall = myMallList[0];
+                      return DropdownButton(
+                        // Initial Value
+                        value: dropdownMall,
 
-                    // Down Arrow Icon
-                    icon: const Icon(Icons.keyboard_arrow_down),
+                        // Down Arrow Icon
+                        icon: const Icon(Icons.keyboard_arrow_down),
 
-                    // Array list of items
-                    items: mall.map((String items) {
-                      return DropdownMenuItem(
-                        value: items,
-                        child: Text(items),
+                        // Array list of items
+                        items: myMallList.map((String items) {
+                          return DropdownMenuItem(
+                            value: items,
+                            child: Text(items),
+                          );
+                        }).toList(),
+                        // After selecting the desired option,it will
+                        // change button value to selected value
+                        onChanged: (newValue) {
+                          setState(() {
+                            dropdownMall = newValue!;
+                          });
+                          print(dropdownMall);
+                        },
                       );
-                    }).toList(),
-                    // After selecting the desired option,it will
-                    // change button value to selected value
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        dropdownMall = newValue!;
-                      });
                     },
                   ),
                 ],

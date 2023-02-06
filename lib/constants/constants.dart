@@ -98,3 +98,9 @@ const mall = [
   "Petaling Jaya Mall",
   "Suria KLCC",
 ];
+
+List reasons = [
+  "Insufficient ingredients",
+  "Change order",
+  "Closing soon",
+];

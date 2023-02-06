@@ -9,6 +9,7 @@ import 'package:vendor/controllers/dashboard_controller.dart';
 import 'package:vendor/controllers/my_order_controller.dart';
 import 'package:vendor/controllers/revenue_controller.dart';
 import 'package:vendor/controllers/wallet_balance_controller.dart';
+import 'package:vendor/screens/chat_screen.dart';
 
 class OrderScreen extends StatefulWidget {
   const OrderScreen({super.key});
@@ -92,7 +93,7 @@ class _OrderScreenState extends State<OrderScreen> {
                           acceptList.add("0");
                         }
                         final orderModel0 = orderController.cartList[index];
-                        if (orderModel0.uid == authController.user.uid) {
+                        if (orderModel0.vendorId == authController.user.uid) {
                           return ListTile(
                             tileColor: orderModel0.code == "1"
                                 ? Colors.white
@@ -102,250 +103,298 @@ class _OrderScreenState extends State<OrderScreen> {
                                         ? Colors.blue
                                         : orderModel0.code == "4"
                                             ? Colors.amber
-                                            : Colors.red,
+                                            : orderModel0.code == "5"
+                                                ? Colors.white
+                                                : Colors.red,
                             onTap: () {
                               if (orderModel0.code == "1" ||
                                   orderModel0.code == "2" ||
-                                  orderModel0.code == "3") {
+                                  orderModel0.code == "3" ||
+                                  orderModel0.code == "4") {
                                 showDialog(
                                     context: context,
                                     builder: (_) => AlertDialog(
                                           title: Text(
                                               'Accept or reject order #${orderModel0.username}'),
-                                          content: Row(children: [
-                                            orderModel0.code == "1"
-                                                ? InkWell(
-                                                    onTap: () {
-                                                      OrderFirestoreDb
-                                                          .updateCode(
-                                                              '2',
-                                                              orderModel0
-                                                                  .orderId);
-                                                      Navigator.pop(context);
-                                                    },
-                                                    child: Container(
-                                                      width: 100,
-                                                      height: 40,
-                                                      decoration: BoxDecoration(
-                                                        color: primaryColor,
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(10),
-                                                      ),
-                                                      alignment:
-                                                          Alignment.center,
-                                                      child:
-                                                          const Text("Accept"),
-                                                    ),
-                                                  )
-                                                : orderModel0.code == "2"
-                                                    ? InkWell(
-                                                        onTap: () {
-                                                          OrderFirestoreDb
-                                                              .updateCode(
-                                                                  '3',
-                                                                  orderModel0
-                                                                      .orderId);
-                                                          Navigator.pop(
-                                                              context);
-                                                        },
-                                                        child: Container(
-                                                          width: 100,
-                                                          height: 40,
-                                                          decoration:
-                                                              BoxDecoration(
-                                                            color: Colors.blue,
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        10),
-                                                          ),
-                                                          alignment:
-                                                              Alignment.center,
-                                                          child: const Text(
-                                                              "In Progress"),
-                                                        ),
-                                                      )
-                                                    : orderModel0.code == "3"
-                                                        ? InkWell(
-                                                            onTap: () {
-                                                              OrderFirestoreDb
-                                                                  .updateCode(
-                                                                      '4',
-                                                                      orderModel0
-                                                                          .orderId);
-
-                                                              double newBalance = double
-                                                                      .parse(
-                                                                          balance) +
-                                                                  (orderModel0
-                                                                          .foodPrice *
-                                                                      orderModel0
-                                                                          .quantity);
-
-                                                              WalletBalanceFirestoreDb
-                                                                  .updateAmount(
-                                                                      newBalance
-                                                                          .toStringAsFixed(
-                                                                              2),
-                                                                      authController
-                                                                          .user
-                                                                          .uid);
-                                                              double newRevenue = double
-                                                                      .parse(
-                                                                          revenue) +
-                                                                  (orderModel0
-                                                                          .foodPrice *
-                                                                      orderModel0
-                                                                          .quantity);
-                                                              RevenueFirestoreDb
-                                                                  .updateRevenueAmount(
-                                                                      newRevenue
-                                                                          .toStringAsFixed(
-                                                                              2),
-                                                                      authController
-                                                                          .user
-                                                                          .uid);
-
-                                                              //calculate total orders
-                                                              int orderTotal = int
-                                                                      .parse(
-                                                                          totalOrder) +
-                                                                  orderModel0
-                                                                      .quantity;
-
-                                                              DashboardFirestoreDb
-                                                                  .updateTotalOrders(
-                                                                      orderTotal
-                                                                          .toString(),
-                                                                      authController
-                                                                          .user
-                                                                          .uid);
-
-                                                              // calculate total customers
-                                                              List customers =
-                                                                  [];
-                                                              if (customers
-                                                                      .isEmpty ||
-                                                                  !customers.contains(
-                                                                      orderModel0
-                                                                          .uid)) {
-                                                                customers.add(
-                                                                    orderModel0
-                                                                        .uid);
-                                                              }
-                                                              int customerTotal =
-                                                                  int.parse(
-                                                                          totalCustomer) +
-                                                                      customers
-                                                                          .length;
-                                                              DashboardFirestoreDb
-                                                                  .updateTotalCustomers(
-                                                                      customerTotal
-                                                                          .toString(),
-                                                                      authController
-                                                                          .user
-                                                                          .uid);
-
-                                                              //calculate dine in
-
-                                                              List dines = [];
-                                                              if (orderModel0
-                                                                      .isDineIn ==
-                                                                  true) {
-                                                                dines.add(
-                                                                    orderModel0
-                                                                        .isDineIn);
-                                                              }
-
-                                                              int newDine = int
-                                                                      .parse(
-                                                                          totalDineIn) +
-                                                                  dines.length;
-                                                              DashboardFirestoreDb
-                                                                  .updateDineIn(
-                                                                      newDine
-                                                                          .toString(),
-                                                                      authController
-                                                                          .user
-                                                                          .uid);
-
-                                                              //calculate takes away
-
-                                                              List takes = [];
-                                                              if (orderModel0
-                                                                      .isDineIn ==
-                                                                  false) {
-                                                                takes.add(
-                                                                    orderModel0
-                                                                        .isDineIn);
-                                                              }
-                                                              int newTake = int
-                                                                      .parse(
-                                                                          totalTakeAway) +
-                                                                  takes.length;
-                                                              DashboardFirestoreDb
-                                                                  .updatetakeAway(
-                                                                      newTake
-                                                                          .toString(),
-                                                                      authController
-                                                                          .user
-                                                                          .uid);
-
-                                                              Navigator.pop(
-                                                                  context);
-                                                            },
-                                                            child: Container(
-                                                              width: 100,
-                                                              height: 40,
-                                                              decoration:
-                                                                  BoxDecoration(
-                                                                color: Colors
-                                                                    .amber,
-                                                                borderRadius:
-                                                                    BorderRadius
-                                                                        .circular(
-                                                                            10),
-                                                              ),
-                                                              alignment:
-                                                                  Alignment
-                                                                      .center,
-                                                              child: const Text(
-                                                                  "Completed"),
-                                                            ),
-                                                          )
-                                                        : const SizedBox(),
-                                            const Spacer(),
-                                            orderModel0.code == "1"
-                                                ? InkWell(
-                                                    onTap: () {
-                                                      OrderFirestoreDb
-                                                          .updateCode(
-                                                              '6',
-                                                              orderModel0
-                                                                  .orderId);
-                                                      Navigator.pop(context);
-                                                    },
-                                                    child: Container(
-                                                      width: 100,
-                                                      height: 40,
-                                                      decoration: BoxDecoration(
-                                                        border: Border.all(
+                                          content: Row(
+                                            children: [
+                                              orderModel0.code == "1"
+                                                  ? InkWell(
+                                                      onTap: () {
+                                                        OrderFirestoreDb
+                                                            .updateCode(
+                                                                '2',
+                                                                orderModel0
+                                                                    .orderId);
+                                                        Navigator.pop(context);
+                                                      },
+                                                      child: Container(
+                                                        width: 100,
+                                                        height: 40,
+                                                        decoration:
+                                                            BoxDecoration(
                                                           color: primaryColor,
-                                                          width: 2,
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(10),
                                                         ),
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(10),
+                                                        alignment:
+                                                            Alignment.center,
+                                                        child: const Text(
+                                                            "Accept"),
                                                       ),
-                                                      alignment:
-                                                          Alignment.center,
-                                                      child:
-                                                          const Text("Reject"),
-                                                    ),
-                                                  )
-                                                : const SizedBox(),
-                                          ]),
+                                                    )
+                                                  : orderModel0.code == "2"
+                                                      ? InkWell(
+                                                          onTap: () {
+                                                            OrderFirestoreDb
+                                                                .updateCode(
+                                                                    '3',
+                                                                    orderModel0
+                                                                        .orderId);
+                                                            Navigator.pop(
+                                                                context);
+                                                          },
+                                                          child: Container(
+                                                            width: 100,
+                                                            height: 40,
+                                                            decoration:
+                                                                BoxDecoration(
+                                                              color:
+                                                                  Colors.blue,
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          10),
+                                                            ),
+                                                            alignment: Alignment
+                                                                .center,
+                                                            child: const Text(
+                                                                "In Progress"),
+                                                          ),
+                                                        )
+                                                      : orderModel0.code == "3"
+                                                          ? InkWell(
+                                                              onTap: () {
+                                                                OrderFirestoreDb
+                                                                    .updateCode(
+                                                                        '4',
+                                                                        orderModel0
+                                                                            .orderId);
+
+                                                                double newBalance = double
+                                                                        .parse(
+                                                                            balance) +
+                                                                    (orderModel0
+                                                                            .foodPrice *
+                                                                        orderModel0
+                                                                            .quantity);
+
+                                                                WalletBalanceFirestoreDb.updateAmount(
+                                                                    newBalance
+                                                                        .toStringAsFixed(
+                                                                            2),
+                                                                    authController
+                                                                        .user
+                                                                        .uid);
+                                                                double newRevenue = double
+                                                                        .parse(
+                                                                            revenue) +
+                                                                    (orderModel0
+                                                                            .foodPrice *
+                                                                        orderModel0
+                                                                            .quantity);
+                                                                RevenueFirestoreDb.updateRevenueAmount(
+                                                                    newRevenue
+                                                                        .toStringAsFixed(
+                                                                            2),
+                                                                    authController
+                                                                        .user
+                                                                        .uid);
+
+                                                                //calculate total orders
+                                                                int orderTotal = int
+                                                                        .parse(
+                                                                            totalOrder) +
+                                                                    orderModel0
+                                                                        .quantity;
+
+                                                                DashboardFirestoreDb.updateTotalOrders(
+                                                                    orderTotal
+                                                                        .toString(),
+                                                                    authController
+                                                                        .user
+                                                                        .uid);
+
+                                                                // calculate total customers
+                                                                List customers =
+                                                                    [];
+                                                                if (customers
+                                                                        .isEmpty ||
+                                                                    !customers.contains(
+                                                                        orderModel0
+                                                                            .uid)) {
+                                                                  customers.add(
+                                                                      orderModel0
+                                                                          .uid);
+                                                                }
+                                                                int customerTotal = int
+                                                                        .parse(
+                                                                            totalCustomer) +
+                                                                    customers
+                                                                        .length;
+                                                                DashboardFirestoreDb.updateTotalCustomers(
+                                                                    customerTotal
+                                                                        .toString(),
+                                                                    authController
+                                                                        .user
+                                                                        .uid);
+
+                                                                //calculate dine in
+
+                                                                List dines = [];
+                                                                if (orderModel0
+                                                                        .isDineIn ==
+                                                                    true) {
+                                                                  dines.add(
+                                                                      orderModel0
+                                                                          .isDineIn);
+                                                                }
+
+                                                                int newDine = int
+                                                                        .parse(
+                                                                            totalDineIn) +
+                                                                    dines
+                                                                        .length;
+                                                                DashboardFirestoreDb
+                                                                    .updateDineIn(
+                                                                        newDine
+                                                                            .toString(),
+                                                                        authController
+                                                                            .user
+                                                                            .uid);
+
+                                                                //calculate takes away
+
+                                                                List takes = [];
+                                                                if (orderModel0
+                                                                        .isDineIn ==
+                                                                    false) {
+                                                                  takes.add(
+                                                                      orderModel0
+                                                                          .isDineIn);
+                                                                }
+                                                                int newTake = int
+                                                                        .parse(
+                                                                            totalTakeAway) +
+                                                                    takes
+                                                                        .length;
+                                                                DashboardFirestoreDb
+                                                                    .updatetakeAway(
+                                                                        newTake
+                                                                            .toString(),
+                                                                        authController
+                                                                            .user
+                                                                            .uid);
+
+                                                                Navigator.pop(
+                                                                    context);
+                                                              },
+                                                              child: Container(
+                                                                width: 100,
+                                                                height: 40,
+                                                                decoration:
+                                                                    BoxDecoration(
+                                                                  color: Colors
+                                                                      .amber,
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              10),
+                                                                ),
+                                                                alignment:
+                                                                    Alignment
+                                                                        .center,
+                                                                child: const Text(
+                                                                    "Completed"),
+                                                              ),
+                                                            )
+                                                          : InkWell(
+                                                              onTap: () {
+                                                                OrderFirestoreDb
+                                                                    .updateCode(
+                                                                        '5',
+                                                                        orderModel0
+                                                                            .orderId);
+                                                                Navigator.pop(
+                                                                    context);
+                                                              },
+                                                              child: Container(
+                                                                width: 100,
+                                                                height: 40,
+                                                                decoration:
+                                                                    BoxDecoration(
+                                                                  color: Colors
+                                                                      .amber,
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              10),
+                                                                ),
+                                                                alignment:
+                                                                    Alignment
+                                                                        .center,
+                                                                child:
+                                                                    const Text(
+                                                                        "Done"),
+                                                              ),
+                                                            ),
+                                              const Spacer(),
+                                              orderModel0.code == "1"
+                                                  ? InkWell(
+                                                      onTap: () {
+                                                        // OrderFirestoreDb
+                                                        //     .updateCode(
+                                                        //         '6',
+                                                        //         orderModel0
+                                                        //             .orderId);
+                                                        // Navigator.pop(context);
+                                                        Get.to(
+                                                          () => ChatScreen(
+                                                              orderModel:
+                                                                  orderModel0,
+                                                              vendorId:
+                                                                  orderModel0
+                                                                      .vendorId,
+                                                              customerId:
+                                                                  orderModel0
+                                                                      .uid,
+                                                              chatRoomId:
+                                                                  "${orderModel0.vendorId}&&${orderModel0.uid}"),
+                                                        );
+                                                      },
+                                                      child: Container(
+                                                        width: 100,
+                                                        height: 40,
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          border: Border.all(
+                                                            color: primaryColor,
+                                                            width: 2,
+                                                          ),
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(10),
+                                                        ),
+                                                        alignment:
+                                                            Alignment.center,
+                                                        child: const Text(
+                                                            "Reject"),
+                                                      ),
+                                                    )
+                                                  : const SizedBox(),
+                                            ],
+                                          ),
                                         ));
                               }
                             },
