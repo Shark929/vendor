@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_profile_picture/flutter_profile_picture.dart';
 import 'package:get/get.dart';
 import 'package:vendor/constants/constants.dart';
 import 'package:vendor/constants/vendor_firestore_db.dart';
 import 'package:vendor/controllers/vendor_controller.dart';
 import 'package:vendor/screens/edit_profile_screen.dart';
 import '../controllers/profile_controller.dart';
+import 'order_history_screen.dart';
 
 class ProfileScreens extends StatefulWidget {
   final String uid;
@@ -21,9 +23,7 @@ class _ProfileScreensState extends State<ProfileScreens> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    // profileController.updateUserId(widget.uid);
   }
 
   @override
@@ -55,18 +55,25 @@ class _ProfileScreensState extends State<ProfileScreens> {
                                 alignment: Alignment.center,
                                 child: Stack(
                                   children: [
-                                    Container(
-                                      width: 100,
-                                      height: 100,
-                                      decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        image: DecorationImage(
-                                          image: NetworkImage(
-                                              vendorModel0.vendorImage),
-                                          fit: BoxFit.cover,
-                                        ),
-                                      ),
-                                    ),
+                                    vendorModel0.vendorImage == ""
+                                        ? ProfilePicture(
+                                            name: vendorModel0
+                                                .vendorRestaurantName,
+                                            radius: 45,
+                                            fontsize: 21,
+                                          )
+                                        : Container(
+                                            width: 100,
+                                            height: 100,
+                                            decoration: BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              image: DecorationImage(
+                                                image: NetworkImage(
+                                                    vendorModel0.vendorImage),
+                                                fit: BoxFit.cover,
+                                              ),
+                                            ),
+                                          ),
                                   ],
                                 ),
                               ),
@@ -122,15 +129,18 @@ class _ProfileScreensState extends State<ProfileScreens> {
                               ),
                               Align(
                                 alignment: Alignment.centerLeft,
-                                child: Text(
-                                    "Location: ${vendorModel0.vendorLocation}"),
+                                child: Text(vendorModel0.vendorLocation == ""
+                                    ? "Location: Choose location in edit profile"
+                                    : "Location: ${vendorModel0.vendorLocation}"),
                               ),
                               const SizedBox(
                                 height: 20,
                               ),
                               Align(
                                 alignment: Alignment.centerLeft,
-                                child: Text("Mall: ${vendorModel0.vendorMall}"),
+                                child: Text(vendorModel0.vendorMall == ""
+                                    ? "Mall: Choose mall in edit profile"
+                                    : "Mall: ${vendorModel0.vendorMall}"),
                               ),
                               const SizedBox(
                                 height: 20,
@@ -147,6 +157,21 @@ class _ProfileScreensState extends State<ProfileScreens> {
                                 alignment: Alignment.centerLeft,
                                 child: Text(
                                     "close hour: ${vendorModel0.closeHour} PM"),
+                              ),
+                              const SizedBox(
+                                height: 20,
+                              ),
+                              InkWell(
+                                onTap: () {
+                                  Get.to(() => const OrderHistoryScreen());
+                                },
+                                child: Row(
+                                  children: const [
+                                    Text("View order history"),
+                                    Spacer(),
+                                    Icon(Icons.arrow_forward_ios),
+                                  ],
+                                ),
                               ),
                               const SizedBox(
                                 height: 50,

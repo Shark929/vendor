@@ -50,6 +50,7 @@ class RegisterScreen extends StatelessWidget {
                 height: 20,
               ),
               TextInputField(
+                keyboardType: TextInputType.number,
                 controller: phoneNumController,
                 label: "Phone",
                 icon: Icons.phone,
@@ -58,6 +59,7 @@ class RegisterScreen extends StatelessWidget {
                 height: 20,
               ),
               TextInputField(
+                  keyboardType: TextInputType.emailAddress,
                   controller: emailController,
                   label: "Email",
                   icon: Icons.email),

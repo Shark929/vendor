@@ -73,7 +73,9 @@ class Wallet extends StatelessWidget {
                                     if (walletBalanceModel0.vendorId ==
                                         authController.user.uid) {
                                       return Text(
-                                        "RM ${double.parse(walletBalanceModel0.balance).toStringAsFixed(2)}",
+                                        walletBalanceModel0.balance == ""
+                                            ? "RM 0.00"
+                                            : "RM ${double.parse(walletBalanceModel0.balance).toStringAsFixed(2)}",
                                         style: const TextStyle(
                                           fontSize: 24,
                                           fontWeight: FontWeight.w600,

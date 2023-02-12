@@ -38,6 +38,7 @@ class LoginScreen extends StatelessWidget {
                   height: 20,
                 ),
                 TextInputField(
+                    keyboardType: TextInputType.emailAddress,
                     controller: emailController,
                     label: "Email",
                     icon: Icons.email),

@@ -5,6 +5,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:vendor/controllers/auth_controller.dart';
 import 'package:vendor/screens/home.dart';
+import 'package:vendor/screens/new_order_screen.dart';
 import 'package:vendor/screens/order_screen.dart';
 import 'package:vendor/screens/profile_screen.dart';
 import 'package:vendor/screens/wallet_screen.dart';
@@ -21,9 +22,9 @@ var firebaseFirestore = FirebaseFirestore.instance;
 
 //list of screens
 List screens = [
-  Home(),
-  OrderScreen(),
-  Wallet(),
+  const Home(),
+  const NewOrderScreen(),
+  const Wallet(),
   ProfileScreens(
     uid: authController.user.uid,
   ),

@@ -22,7 +22,7 @@ class MyMenuScreens extends StatelessWidget {
               height: 20,
             ),
             SizedBox(
-              height: MediaQuery.of(context).size.height - 200,
+              height: MediaQuery.of(context).size.height - 100,
               child: GetX<ItemController>(
                 init: Get.put(ItemController()),
                 builder: (ItemController itemController) {

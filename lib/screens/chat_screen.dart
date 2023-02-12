@@ -3,23 +3,29 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:vendor/constants/chat_firestore_db.dart';
 import 'package:vendor/constants/constants.dart';
-import 'package:vendor/constants/order_firestore_db.dart';
+import 'package:vendor/constants/customer_order_firestoredb.dart';
+import 'package:vendor/constants/transaction_db.dart';
 import 'package:vendor/constants/user_refund_firestore.dart';
 import 'package:vendor/controllers/chat_controller.dart';
+import 'package:vendor/controllers/new_order_detail_controller.dart';
 import 'package:vendor/controllers/user_refund_controller.dart';
 import 'package:vendor/models/chat_model.dart';
-import 'package:vendor/models/order_model.dart';
+import 'package:vendor/models/customer_cart_model.dart';
+import 'package:vendor/models/transaction_model.dart';
 import 'package:vendor/screens/home_screen.dart';
 
+import '../constants/order_history_firebasedb.dart';
+
 class ChatScreen extends StatefulWidget {
-  final OrderModel orderModel;
-  final String vendorId, customerId, chatRoomId;
-  const ChatScreen(
-      {super.key,
-      required this.vendorId,
-      required this.customerId,
-      required this.chatRoomId,
-      required this.orderModel});
+  final String vendorId, customerId, chatRoomId, orderNumber, totalPrice;
+  const ChatScreen({
+    super.key,
+    required this.vendorId,
+    required this.customerId,
+    required this.chatRoomId,
+    required this.orderNumber,
+    required this.totalPrice,
+  });
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
@@ -28,9 +34,12 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   TextEditingController messageController = TextEditingController();
   List chatId = [];
+
   @override
   Widget build(BuildContext context) {
-    print(widget.customerId);
+    List<MyCartModel> myCartList = [];
+    String getCartId = "";
+
     return Scaffold(
       appBar: AppBar(
         title: const Text("Chat"),
@@ -86,25 +95,42 @@ class _ChatScreenState extends State<ChatScreen> {
                                           }
                                         }
 
-                                        //refund money
-                                        print(customerWalletAmount);
-                                        double totalPriceToRefund =
-                                            double.parse(widget
-                                                    .orderModel.quantity
-                                                    .toString()) *
-                                                double.parse(widget
-                                                    .orderModel.foodPrice
-                                                    .toString());
-                                        double refundAmount =
-                                            totalPriceToRefund +
-                                                double.parse(
-                                                    customerWalletAmount);
+                                        // //refund money
+                                        // print(customerWalletAmount);
+
+                                        double refundAmount = double.parse(
+                                                widget.totalPrice) +
+                                            double.parse(customerWalletAmount);
                                         UserRefundFirestoreDb.refundAmount(
                                             refundAmount.toStringAsFixed(2),
                                             widget.customerId);
-                                        //set order code to 6
-                                        OrderFirestoreDb.updateCode(
-                                            "6", widget.orderModel.orderId);
+
+                                        final transactionModel =
+                                            TransactionModel(
+                                                date: Timestamp.fromDate(
+                                                    DateTime.now()),
+                                                amount: double.parse(
+                                                        refundAmount
+                                                            .toStringAsFixed(2))
+                                                    .toStringAsFixed(2),
+                                                code: 3,
+                                                uid: widget.customerId);
+                                        TransactionFirestoreDb.addTransaction(
+                                            transactionModel);
+                                        /**
+                                         * 1. update code
+                                         * 2. delete all data
+                                         */
+                                        for (var e in myCartList) {
+                                          OrderHistoryFirestoreDb
+                                              .addOrderHistory(e);
+                                        }
+
+                                        NewOrderFirestoreDb.deleteOrderList(
+                                            widget.orderNumber, getCartId);
+                                        NewOrderFirestoreDb.deleteOrder(
+                                            widget.orderNumber);
+                                        Navigator.pop(context);
                                         Get.to(() => const HomeScreen());
                                       },
                                       title: Text(reasons[index]),
@@ -115,12 +141,28 @@ class _ChatScreenState extends State<ChatScreen> {
                         ),
                       ));
             },
-            icon: Icon(Icons.more_horiz),
+            icon: const Icon(Icons.more_horiz),
           ),
         ],
       ),
       body: Stack(
         children: [
+          GetX<OrderItemController2>(
+              init: Get.put(
+                  OrderItemController2(orderNumber: widget.orderNumber)),
+              builder: (OrderItemController2 ocController) {
+                return ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: ocController.order.length,
+                    itemBuilder: (context, index) {
+                      getCartId = ocController.order[index].myCartId!;
+                      if (myCartList.isEmpty ||
+                          myCartList.length < ocController.order.length) {
+                        myCartList.add(ocController.order[index]);
+                      }
+                      return const SizedBox();
+                    });
+              }),
           Container(
             padding: const EdgeInsets.all(
               16,

@@ -352,27 +352,7 @@ class _OrderScreenState extends State<OrderScreen> {
                                               const Spacer(),
                                               orderModel0.code == "1"
                                                   ? InkWell(
-                                                      onTap: () {
-                                                        // OrderFirestoreDb
-                                                        //     .updateCode(
-                                                        //         '6',
-                                                        //         orderModel0
-                                                        //             .orderId);
-                                                        // Navigator.pop(context);
-                                                        Get.to(
-                                                          () => ChatScreen(
-                                                              orderModel:
-                                                                  orderModel0,
-                                                              vendorId:
-                                                                  orderModel0
-                                                                      .vendorId,
-                                                              customerId:
-                                                                  orderModel0
-                                                                      .uid,
-                                                              chatRoomId:
-                                                                  "${orderModel0.vendorId}&&${orderModel0.uid}"),
-                                                        );
-                                                      },
+                                                      onTap: () {},
                                                       child: Container(
                                                         width: 100,
                                                         height: 40,
